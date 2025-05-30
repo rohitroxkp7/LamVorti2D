@@ -6,7 +6,7 @@ from scipy.sparse.linalg import spsolve
 
 from transformation_metrics import grid_metrics_cylinder
 
-def solve(imax, jmax, r1, r2, Re, speed, rot_time, dtau, t_start, t_end, deltaT, restart_flag, plot_flag, conv_flag, simulation_name):
+def solve(imax, jmax, r1, r2, Re, speed, rot_time, dtau, t_start, t_end, deltaT, restart_flag, plot_flag, conv_flag, simulation_name, steady_flag):
     
     metrics = grid_metrics_cylinder(imax,jmax,r1,r2,plot_flag)
     alfa , beta , gama , P , Q , Jac , kc,kn,ks,ke,kw,knw,kne,ksw,kse,x,y, detadx , detady , alen2= metrics.compute_metrics()
@@ -124,7 +124,16 @@ def solve(imax, jmax, r1, r2, Re, speed, rot_time, dtau, t_start, t_end, deltaT,
     os.makedirs(os.path.join(base_dir, "omega_data"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "residual_data"), exist_ok=True)
     
-    for t in np.arange(t_start, t_end + deltaT, deltaT):
+    if steady_flag==1:
+        t1    = 0
+        t2    = 1
+        tstep = 1
+    else:
+        t1    = t_start
+        t2    = t_end + deltaT
+        tstep = deltaT
+    
+    for t in np.arange(t1, t2, tstep):
         
         residual = 1.0e5
         residual_vec = []
